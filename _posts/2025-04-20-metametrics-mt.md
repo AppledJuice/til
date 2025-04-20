@@ -9,8 +9,8 @@ tags: [evaluation, translation]
 author: PSN
 ---
 
-MetaMetrics-MT topped the primary submissions to the WMT24 Metrics Task (an annual competition that benchmarks machine‑translation (MT) evaluation metrics against experts' human‑judgement.). 
+Reference-based MetaMetrics-MT model **topped** the primary submissions to the WMT24 Metrics Task (an annual competition that benchmarks machine‑translation (MT) evaluation metrics against experts' human‑judgement.). 
 
-![wmt24 table](/assets/img/metametrics/metametrics-mt1.png)
+![wmt24 table]({{ site.baseurl }}/assets/img/metametrics/metametrics-mt1.png)
 
 Metametrics was published in a paper on 1 Nov 2024.  
