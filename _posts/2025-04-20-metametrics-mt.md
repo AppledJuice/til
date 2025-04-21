@@ -39,24 +39,39 @@ This is due to the installation happens outside in the main folder, but not in t
 uv pip install . 
 ```
 
+### metametrics-cli
 Finally, the authors said to use the thin wrapper `metametrics-cli`. 
-The `run` command routes to the real entry‑point `run_metametrics()`. Using the same example command as before:
+The `run` command routes to the real entry‑point `run_metametrics()`. 
+
+The `mt_gp_metrics.yaml` has all the configs setup - they listed out what are all the configs:
+```{note}
+- modality: Modality for MetaMetrics (e.g., text).
+- output_dir: Directory to save experiment results.
+- evaluation_method: Method for evaluating experiments.
+evaluation_only: Set to True to perform evaluation only (requires pipeline_load_path).
+pipeline_load_path: Path to a pre-saved pipeline (used with evaluation_only).
+- optimizer_config_path: Path to YAML/JSON with optimizer configuration.
+- metrics_config_path: Path to YAML/JSON with metrics configuration.
+- dataset_config_path: Path to YAML/JSON with dataset configuration.
+- hf_hub_token: HuggingFace token for dataset access.
+cache_dir: Cache directory for datasets and models.
+- normalize_metrics: Normalize metrics for MetaMetrics.
+- overwrite_output_dir: Overwrite existing output directory.
+```
+
+Using the same example command as before:
 ```bash
 metametrics-cli run examples/example_mt/mt_gp_metrics.yaml
 ```
 
-The `mt_gp_metrics.yaml` has all the configs setup here. 
+This will give an error.. (ValueError: Invalid pattern: '**' can only be an entire path component)[https://stackoverflow.com/questions/77671277/valueerror-invalid-pattern-can-only-be-an-entire-path-component?utm_source=chatgpt.com]
 
-modality: Modality for MetaMetrics (e.g., text).
-output_dir: Directory to save experiment results.
-evaluation_method: Method for evaluating experiments.
-evaluation_only: Set to True to perform evaluation only (requires pipeline_load_path).
-pipeline_load_path: Path to a pre-saved pipeline (used with evaluation_only).
-optimizer_config_path: Path to YAML/JSON with optimizer configuration.
-metrics_config_path: Path to YAML/JSON with metrics configuration.
-dataset_config_path: Path to YAML/JSON with dataset configuration.
-hf_hub_token: HuggingFace token for dataset access.
-cache_dir: Cache directory for datasets and models.
-normalize_metrics: Normalize metrics for MetaMetrics.
-overwrite_output_dir: Overwrite existing output directory.
+We can fix this by updating datasets:
+```bash
+uv pip install -U datasets
+```
+
+
+
+
 
