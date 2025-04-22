@@ -129,6 +129,7 @@ def score(self, predictions: List[str], references: Union[None, List[List[str]]]
 ```bash
 metametrics-cli run examples/example_mt/mt_gp_metrics.yaml
 ```
+9:35AM
 
-The terminal will print out pred: ref: pref ref: ... and hang for a few minutes at the below screenshot. 
+It should run Bleu (quite fast) and followed by BLEURT(may take about some time, see below screenshot):
 ![run example_mt]({{ site.baseurl }}/assets/img/metametrics/run-mt-example.png)
