@@ -25,6 +25,7 @@ We first create a virtual environment using UV:
 ```bash
 uv venv                        # faster venv creation than python -m venv
 source .venv/bin/activate      # activate .venv
+uv pip install --upgrade pip setuptools wheel  # Upgrade pip, setuptools & wheel 
 uv pip install -e .            # install using setup.py 
 uv pip install spacy           # also need to install spacy 
 ```
@@ -38,6 +39,9 @@ This is due to the installation happens outside in the main folder, but not in t
 # first cd into the bleurt folder
 uv pip install . 
 ```
+
+![bleurt]({{ site.baseurl }}/assets/img/metametrics/bleurt.png) 
+
 
 ### metametrics-cli
 Finally, the authors said to use the thin wrapper `metametrics-cli`. 
@@ -64,14 +68,67 @@ Using the same example command as before:
 metametrics-cli run examples/example_mt/mt_gp_metrics.yaml
 ```
 
-This will give an error.. (ValueError: Invalid pattern: '**' can only be an entire path component)[https://stackoverflow.com/questions/77671277/valueerror-invalid-pattern-can-only-be-an-entire-path-component?utm_source=chatgpt.com]
+This will give an error.. [ValueError: Invalid pattern: '**' can only be an entire path component](https://stackoverflow.com/questions/77671277/valueerror-invalid-pattern-can-only-be-an-entire-path-component?utm_source=chatgpt.com)
 
 We can fix this by updating datasets:
 ```bash
 uv pip install -U datasets
 ```
 
+- There's another error when I tried to rerun metametrics-cli:
+KeyError: "Column text_hyp not in the dataset. Current columns in the dataset: ['target_score']"
+
+The example `dataset_config.yaml` had some errors, need replace with below: 
+```yaml
+### Dataset
+train_dataset:
+  wmt_train:
+    hf_hub_url: davidanugraha/wmt-mqm
+    subset: wmt2020-2022
+    columns:
+      text_src: src         # was src_text
+      text_hyp: mt          # was hyp_text
+      text_ref: ref         # was ref_text
+      target_score: score
+eval_dataset:
+  wmt_train:
+    hf_hub_url: davidanugraha/wmt-mqm
+    subset: wmt2023
+    columns:
+      text_src: src
+      text_hyp: mt
+      text_ref: ref
+```
+
+- A final error occurred: 
+
+"/home/paishan/metametrics/metametrics/mtenv/lib/python3.11/site-packages/sacrebleu/metrics/base.py", line 235, in _check_sentence_score_args
+    raise TypeError(f"{prefix}: {err_msg}")
+TypeError: BLEU: The argument refs should be a sequence of strings.
 
 
+BLEU: The argument refs should be a sequence of strings means BLEUMetric.score is handing a single str to sacrebleu.sentence_bleu, but **the function expects a list of reference strings** (even when there is only one reference).
 
+So made a small fix in BLEUMetric.score:
+```python
+def score(self, predictions: List[str], references: Union[None, List[List[str]]]=None, sources: Union[None, List[str]]=None) -> List[float]:
+        segment_scores = []
+        for pred, ref in zip(predictions, references):
+            print(f'pred: {pred}')
+            print(f'ref: {ref}')
+            if isinstance(ref, str):
+                ref = [ref]          # ⬅️ fix
+            score = sacrebleu.sentence_bleu(pred, ref, lowercase=self.lowercase, tokenize=self.tokenize,
+                                            smooth_method=self.smooth_method, smooth_value=self.smooth_value,
+                                            use_effective_order=self.use_effective_order).score
+            segment_scores.append(score)
+        return segment_scores
+```
 
+- Run again.
+```bash
+metametrics-cli run examples/example_mt/mt_gp_metrics.yaml
+```
+
+The terminal will print out pred: ref: pref ref: ... and hang for a few minutes at the below screenshot. 
+![run example_mt]({{ site.baseurl }}/assets/img/metametrics/run-mt-example.png)
