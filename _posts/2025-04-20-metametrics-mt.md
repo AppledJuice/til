@@ -17,6 +17,11 @@ Metametrics-mt was published in a paper on 1 Nov 2024. This reference-based mode
 
 ![wmt24 table]({{ site.baseurl }}/assets/img/metametrics/metametrics-mt1.png) 
 
+Bayesian Optimization in Machine Learning is an optimization method that uses probabilistic models to efficiently find a model’s hyperparameters.
+
+`GaussianProcessOptimizer.run_bayesian_optimization()` searches for a set of non‑negative weights that linearly combine your individual metric scores (BLEU, BLEURT, …) so that the combined score correlates as strongly as possible with the human target scores. 
+
+
 ### Let's try to run the code
 
 The authors said to start by running `pip install -e .`. This installs the project found in the current directory in *editable mode*. This means that any changes to the code in the project will be *automatically reflected without reinstalling the package.* Useful for developing and testing a package locally.
@@ -78,7 +83,7 @@ uv pip install -U datasets
 - There's another error when I tried to rerun metametrics-cli:
 KeyError: "Column text_hyp not in the dataset. Current columns in the dataset: ['target_score']"
 
-The example `dataset_config.yaml` had some errors, need replace with below: 
+The example that was provided in `dataset_config.yaml` had some typo errors, need replace with below: 
 ```yaml
 ### Dataset
 train_dataset:
@@ -133,3 +138,6 @@ metametrics-cli run examples/example_mt/mt_gp_metrics.yaml
 
 It should run Bleu (quite fast) and followed by BLEURT(may take about some time, see below screenshot):
 ![run example_mt]({{ site.baseurl }}/assets/img/metametrics/run-mt-example.png)
+
+
+The authors haven't released the model weights publicly yet, they said that they're still refactoring their code. Hopefully they can release the model weights soon.
